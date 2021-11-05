@@ -1,18 +1,18 @@
 FROM ubuntu:18.04
+FROM python:3.9.7
 RUN apt-get update -y
 RUN apt install -y gnupg2 
-RUN apt install -y software-properties-common 
-RUN apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv 9DA31620334BD75D9DCB49F368818C72E52529D4 
-RUN add-apt-repository 'deb [arch=amd64] https://repo.mongodb.org/apt/ubuntu bionic/mongodb-org/4.0 multiverse' 
-RUN apt-get update -y 
-RUN apt install mongodb-org -y
-RUN mkdir /data 
-RUN mkdir /data/db 
-EXPOSE 27017
-#CMD service mongod start
-RUN mongod --bind_ip=0.0.0.0 &
-CMD mongo --eval 'db.runCommand({ connectionStatus: 1 })'
-VOLUME ["/data/db"]
+RUN apt install -y software-properties-common
+RUN apt install -y python3
+RUN apt install -y  python3-pip
 ADD scripts /scripts
-RUN chmod +x /scripts/*.sh
-ENTRYPOINT ["/scripts/start.sh"]
+RUN chmod +x /scripts/*.*
+ENTRYPOINT ["/scripts/requirements.txt"]
+RUN pip3 install -r /scripts/requirements.txt
+#ENTRYPOINT ["/scripts/run.py"]
+#RUN python3 /scripts/run.py
+RUN pip3 install greenlet
+ENTRYPOINT ["python3", "/scripts/run.py"]
+RUN mkdir /data 
+RUN mkdir /data/webserver
+VOLUME ["/data/webserver"]
